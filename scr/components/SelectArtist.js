@@ -18,31 +18,25 @@ const SELECT_ARTISTS = gql`
 
 export default function SelectArtists() {
   const [artists, setArtists] = useState([]);
-  const [getArtists, { loading, error, data }] = useLazyQuery(SELECT_ARTISTS);
+  const [queryArtists, { loading, error, data }] = useLazyQuery(SELECT_ARTISTS);
 
   useEffect(() => {
     if(data && data.findArtists) setArtists(data.findArtists);
   }, [data]);
   if (error) return <Text>Error :(</Text>;
 
-  // Remove all duplicate names
-  const getFlatArtistsNames = () => {
-    const uniqueArtists = [...new Set(artists.map(({ name }) => name))];
-    return uniqueArtists.map((key) => ({ key }));
-  };
-
   const showFlatList = () => {
     if (loading) return <Spinner color='green' />;
-    if (error) return "Cannot fetch suggestions";
+    if (error) return <Text>Cannot fetch suggestions</Text>;
     return <FlatList
       style={styles.flatListContainer}
-      data={getFlatArtistsNames()}
-      renderItem={({item}) => <Text style={styles.flatListContainer}>{item.key}</Text>}
+      data={artists}
+      renderItem={({item}) => <Text style={styles.flatListItem}>{item.name}</Text>}
     />;
   };
 
   const onChangeText = (query) => {
-    if (query.length) return getArtists({ variables: { query } });
+    if (query.length) return queryArtists({ variables: { query } });
     return setArtists([]);
   };
 
@@ -79,11 +73,13 @@ const styles = StyleSheet.create({
     width: 250,
   },
   flatListContainer: {
-    marginTop: 5
+    marginTop: 5,
   },
   flatListItem: {
-    padding: 10,
+    textAlign: 'center',
+    padding: 5,
     fontSize: 18,
     height: 44,
+    width: 250
   },
 });
