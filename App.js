@@ -7,7 +7,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import SelectArtist from './scr/components/SelectArtist';
+import SelectArtist from './scr/features/SelectArtist';
+import ArtistDetails from './scr/features/ArtistDetails';
 
 const client = new ApolloClient({
   uri: 'http://192.168.0.14:4000/graphql',
@@ -44,9 +45,14 @@ export default class App extends React.Component {
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen
-              name="Home"
+              name="SelectArtist"
               component={SelectArtist}
-              options={{ title: 'Welcome' }}
+              options={{ title: 'Find your artist' }}
+            />
+            <Stack.Screen
+              name="ArtistDetails"
+              component={ArtistDetails}
+              options={{ title: 'Artist Details' }}
             />
           </Stack.Navigator>
         </NavigationContainer>

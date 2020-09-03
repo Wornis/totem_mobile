@@ -7,11 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import {
-  Container, Header, Left,
-  Body, Right, Title,
-  Item, Input, Spinner,
-} from 'native-base';
+import { Item, Input, Spinner } from 'native-base';
 
 const SELECT_ARTISTS = gql` 
   query selectArtists($query: String!) {
@@ -22,7 +18,7 @@ const SELECT_ARTISTS = gql`
   }
 `;
 
-export default function SelectArtists() {
+export default function SelectArtists({ navigation }) {
   const [artists, setArtists] = useState([]);
   const [queryArtists, { loading, error, data }] = useLazyQuery(SELECT_ARTISTS);
 
@@ -40,7 +36,7 @@ export default function SelectArtists() {
         data={artists}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => console.log(item)}>
+          <TouchableOpacity onPress={() => navigation.navigate('ArtistDetails', { ...item })}>
             <Text style={styles.flatListItem}>{item.name}</Text>
           </TouchableOpacity>
         )}
@@ -54,24 +50,15 @@ export default function SelectArtists() {
   };
 
   return (
-    <Container>
-      <Header>
-        <Left />
-        <Body>
-          <Title>Find your artist</Title>
-        </Body>
-        <Right />
-      </Header>
-      <View style={styles.container}>
-        <Item rounded style={styles.inputItem}>
-          <Input
-            onChangeText={onChangeText}
-            placeholder="Input artist name.."
-          />
-        </Item>
-        { showFlatList() }
-      </View>
-    </Container>
+    <View style={styles.container}>
+      <Item rounded style={styles.inputItem}>
+        <Input
+          onChangeText={onChangeText}
+          placeholder="Input artist name.."
+        />
+      </Item>
+      { showFlatList() }
+    </View>
   );
 }
 
