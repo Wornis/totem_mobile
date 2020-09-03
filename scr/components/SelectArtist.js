@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery, gql } from '@apollo/client';
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, FlatList } from 'react-native';
 import {
   Container, Header, Left,
-  Body, Right, Button,
-  Icon, Title, Content,
-  Item, Input
+  Body, Right, Title,
+  Item, Input, Spinner,
 } from 'native-base';
 
 const SELECT_ARTISTS = gql` 
@@ -18,19 +17,33 @@ const SELECT_ARTISTS = gql`
 `;
 
 export default function SelectArtists() {
-  const [artists, setArtists] = useState(null);
+  const [artists, setArtists] = useState([]);
   const [getArtists, { loading, error, data }] = useLazyQuery(SELECT_ARTISTS);
 
-  if (loading) return <Text>Loading...</Text>;
+  useEffect(() => {
+    if(data && data.findArtists) setArtists(data.findArtists);
+  }, [data]);
   if (error) return <Text>Error :(</Text>;
 
-  console.log(data);
-  if (data && data.artists) {
-    setArtists(data.artists);
-  }
+  // Remove all duplicate names
+  const getFlatArtistsNames = () => {
+    const uniqueArtists = [...new Set(artists.map(({ name }) => name))];
+    return uniqueArtists.map((key) => ({ key }));
+  };
 
-  const retrieveArtists = (query) => {
-    return getArtists({ variables: { query } })
+  const showFlatList = () => {
+    if (loading) return <Spinner color='green' />;
+    if (error) return "Cannot fetch suggestions";
+    return <FlatList
+      style={styles.flatListContainer}
+      data={getFlatArtistsNames()}
+      renderItem={({item}) => <Text style={styles.flatListContainer}>{item.key}</Text>}
+    />;
+  };
+
+  const onChangeText = (query) => {
+    if (query.length) return getArtists({ variables: { query } });
+    return setArtists([]);
   };
 
   return (
@@ -44,8 +57,12 @@ export default function SelectArtists() {
       </Header>
       <View style={styles.container}>
         <Item rounded style={styles.inputItem}>
-          <Input onChangeText={retrieveArtists} placeholder='Input artist name..'/>
+          <Input
+            onChangeText={onChangeText}
+            placeholder='Input artist name..'
+          />
         </Item>
+        { showFlatList() }
       </View>
     </Container>
   );
@@ -60,5 +77,13 @@ const styles = StyleSheet.create({
   },
   inputItem: {
     width: 250,
-  }
+  },
+  flatListContainer: {
+    marginTop: 5
+  },
+  flatListItem: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
 });
