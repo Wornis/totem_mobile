@@ -1,7 +1,10 @@
 /* eslint-disable global-require */
+import 'react-native-gesture-handler';
 import React from 'react';
 import { AppLoading } from 'expo';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import SelectArtist from './scr/components/SelectArtist';
@@ -10,6 +13,8 @@ const client = new ApolloClient({
   uri: 'http://192.168.0.14:4000/graphql',
   cache: new InMemoryCache(),
 });
+
+const Stack = createStackNavigator();
 
 export default class App extends React.Component {
   constructor(props) {
@@ -36,7 +41,15 @@ export default class App extends React.Component {
 
     return (
       <ApolloProvider client={client}>
-        <SelectArtist />
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Home"
+              component={SelectArtist}
+              options={{ title: 'Welcome' }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       </ApolloProvider>
     );
   }

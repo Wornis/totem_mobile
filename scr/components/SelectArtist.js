@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLazyQuery, gql } from '@apollo/client';
 import {
-  Text, StyleSheet, View, FlatList,
+  Text,
+  StyleSheet,
+  View,
+  FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import {
   Container, Header, Left,
@@ -34,7 +38,12 @@ export default function SelectArtists() {
       <FlatList
         style={styles.flatListContainer}
         data={artists}
-        renderItem={({ item }) => <Text style={styles.flatListItem}>{item.name}</Text>}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => console.log(item)}>
+            <Text style={styles.flatListItem}>{item.name}</Text>
+          </TouchableOpacity>
+        )}
       />
     );
   };
