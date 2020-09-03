@@ -1,10 +1,10 @@
+/* eslint-disable global-require */
 import React from 'react';
 import { AppLoading } from 'expo';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import SelectArtist from "./scr/components/SelectArtist";
+import SelectArtist from './scr/components/SelectArtist';
 
 const client = new ApolloClient({
   uri: 'http://192.168.0.14:4000/graphql',
@@ -29,13 +29,14 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (!this.state.isReady) {
+    const { isReady } = this.state;
+    if (!isReady) {
       return <AppLoading />;
     }
 
     return (
       <ApolloProvider client={client}>
-        <SelectArtist/>
+        <SelectArtist />
       </ApolloProvider>
     );
   }
