@@ -52,7 +52,7 @@ export default class App extends React.Component {
             <Stack.Screen
               name="ArtistDetails"
               component={ArtistDetails}
-              options={{ title: 'Artist Details' }}
+              options={({ route }) => ({ title: route.params.name })}
             />
           </Stack.Navigator>
         </NavigationContainer>
