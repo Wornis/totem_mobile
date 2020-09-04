@@ -9,6 +9,7 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import SelectArtist from './scr/features/SelectArtist';
 import ArtistDetails from './scr/features/ArtistDetails';
+import AlbumDetails from './scr/features/AlbumDetails';
 
 const client = new ApolloClient({
   uri: 'http://192.168.0.14:4000/graphql',
@@ -52,6 +53,11 @@ export default class App extends React.Component {
             <Stack.Screen
               name="ArtistDetails"
               component={ArtistDetails}
+              options={({ route }) => ({ title: route.params.name })}
+            />
+            <Stack.Screen
+              name="AlbumDetails"
+              component={AlbumDetails}
               options={({ route }) => ({ title: route.params.name })}
             />
           </Stack.Navigator>
