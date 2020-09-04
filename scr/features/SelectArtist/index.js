@@ -11,7 +11,7 @@ import { Item, Input, Spinner } from 'native-base';
 
 const SELECT_ARTISTS = gql` 
   query selectArtists($query: String!) {
-    findArtists(query: $query) {
+    artists(query: $query) {
       id,
       name
     }
@@ -19,12 +19,12 @@ const SELECT_ARTISTS = gql`
 `;
 
 export default function SelectArtists({ navigation }) {
-  const [artists, setArtists] = useState([]);
+  const [query, setQuery] = useState('');
   const [queryArtists, { loading, error, data }] = useLazyQuery(SELECT_ARTISTS);
 
   useEffect(() => {
-    if (data && data.findArtists) setArtists(data.findArtists);
-  }, [data]);
+    if (query.length) queryArtists({ variables: { query } });
+  }, [query]);
   if (error) return <Text>Error :(</Text>;
 
   const showFlatList = () => {
@@ -33,7 +33,7 @@ export default function SelectArtists({ navigation }) {
     return (
       <FlatList
         style={styles.flatListContainer}
-        data={artists}
+        data={query.length && data ? data.artists : []}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigation.navigate('ArtistDetails', { ...item })}>
@@ -44,16 +44,11 @@ export default function SelectArtists({ navigation }) {
     );
   };
 
-  const onChangeText = (query) => {
-    if (query.length) return queryArtists({ variables: { query } });
-    return setArtists([]);
-  };
-
   return (
     <View style={styles.container}>
       <Item rounded style={styles.inputItem}>
         <Input
-          onChangeText={onChangeText}
+          onChangeText={(q) => setQuery(q)}
           placeholder="Input artist name.."
         />
       </Item>
